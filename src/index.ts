@@ -1,5 +1,6 @@
-import { Rule, TEXT, isTextItem, NONTERM, isNonTermItem, PATTERN, isPatternItem } from './rule';
+import { Rule, TEXT, NONTERM, PATTERN } from './rule';
 import { ParserContext } from './parser-context';
+import { getFirst } from './util';
 
 /*
 
@@ -8,8 +9,12 @@ inlines
 	/ inline
 
 inline
-	= bold
+	= big
+	/ bold
 	/ char
+
+big
+	= "***" inlines "***"
 
 bold
 	= "**" inlines "**"
@@ -19,43 +24,72 @@ char
 
 */
 
-const rules: Rule[] = [
-	{
-		name: 'inlines',
-		seqs: [
-			[NONTERM('inlines'), NONTERM('inline')],
-			[NONTERM('inline')]
-		]
-	},
-	{
-		name: 'inline',
-		seqs: [
-			[NONTERM('bold')],
-			[NONTERM('char')]
-		]
-	},
-	{
-		name: 'bold',
-		seqs: [
-			[TEXT('**'), NONTERM('inlines'), TEXT('**')]
-		]
-	},
-	{
-		name: 'char',
-		seqs: [
-			[PATTERN('.')]
-		]
-	}
-];
-
 function parse(input: string) {
+
+	console.log(`input: "${input}"`);
+
+	const rules: Rule[] = [
+		{
+			name: 'inlines',
+			seq: [NONTERM('inlines'), NONTERM('inline')]
+		},
+		{
+			name: 'inlines',
+			seq: [NONTERM('inline')]
+		},
+		{
+			name: 'inline',
+			seq: [NONTERM('big')]
+		},
+		{
+			name: 'inline',
+			seq: [NONTERM('bold')]
+		},
+		{
+			name: 'inline',
+			seq: [NONTERM('char')]
+		},
+		{
+			name: 'big',
+			seq: [TEXT('***'), NONTERM('inlines'), TEXT('***')]
+		},
+		{
+			name: 'bold',
+			seq: [TEXT('**'), NONTERM('inlines'), TEXT('**')]
+		},
+		{
+			name: 'char',
+			seq: [PATTERN('.')]
+		}
+	];
+
+	const first = getFirst(rules);
+	console.log('first:', first);
+
 	const ctx = new ParserContext(input);
 
-	if (ctx.seek(2) == '**') {
-
+	for (const rule of first) {
+		switch (rule.seq[0].type) {
+			case 'text':
+				const token = ctx.seek(rule.seq[0].value.length);
+				if (token == rule.seq[0].value) {
+					console.log('text matched');
+					console.log(`token: "${token}"`);
+					console.log('rule:', rule);
+				}
+				break;
+			case 'pattern':
+				const result = new RegExp(`^${rule.seq[0].value}`).exec(ctx.input.substr(ctx.pos));
+				if (result != null) {
+					console.log('pattern matched');
+					console.log('result:', result[0]);
+					console.log('rule:', rule);
+					
+				}
+				break;
+		}
 	}
-
 }
 
-const result = parse('**abc**');
-console.log(result);
+const result = parse('***abc***');
+// console.log(result);

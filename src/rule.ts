@@ -1,39 +1,27 @@
 // Nonterminal symbol
-export type NonTermItem = { nonterm: string };
+export type NonTermItem = { type: 'nonterm', name: string };
 
 export function NONTERM(name: string): NonTermItem {
-	return { nonterm: name };
-}
-export function isNonTermItem(x: Record<string, any>): x is NonTermItem {
-	return (x.nonterm != null);
+	return { type: 'nonterm', name };
 }
 
 // text terminal symbol
-export type TextItem = { text: string };
+export type TextItem = { type: 'text', value: string };
 
-export function TEXT(content: string): TextItem {
-	return { text: content };
-}
-
-export function isTextItem(x: Record<string, any>): x is TextItem {
-	return (x.text != null);
+export function TEXT(value: string): TextItem {
+	return { type: 'text', value };
 }
 
 // pattern terminal symbol
-export type PatternItem = { pattern: string };
+export type PatternItem = { type: 'pattern', value: string };
 
-export function PATTERN(content: string): PatternItem {
-	return { pattern: content };
-}
-
-export function isPatternItem(x: Record<string, any>): x is PatternItem {
-	return (x.pattern != null);
+export function PATTERN(value: string): PatternItem {
+	return { type: 'pattern', value };
 }
 
 export type SeqItem = NonTermItem | TextItem | PatternItem;
-export type RuleSeq = SeqItem[];
 
-export type Rule = {
+export type Rule<T extends SeqItem[] = SeqItem[]> = {
 	name: string;
-	seqs: RuleSeq[];
+	seq: T;
 };
