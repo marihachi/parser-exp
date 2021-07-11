@@ -1,0 +1,24 @@
+{
+  "private": true,
+  "name": "parser-exp",
+  "version": "0.0.0",
+  "description": "",
+  "main": "built/index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marihachi/parser-exp.git"
+  },
+  "author": "Marihachi",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "15.12.4",
+    "typescript": "4.3.4"
+  },
+  "bugs": {
+    "url": "https://github.com/marihachi/parser-exp/issues"
+  },
+  "homepage": "https://github.com/marihachi/parser-exp#readme"
+}
