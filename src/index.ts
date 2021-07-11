@@ -1,4 +1,5 @@
-import { Rule, TEXT, NONTERM, PATTERN } from './rule';
+import { Rule, TEXT, isTextItem, NONTERM, isNonTermItem, PATTERN, isPatternItem } from './rule';
+import { ParserContext } from './parser-context';
 
 /*
 
@@ -46,3 +47,15 @@ const rules: Rule[] = [
 		]
 	}
 ];
+
+function parse(input: string) {
+	const ctx = new ParserContext(input);
+
+	if (ctx.seek(2) == '**') {
+
+	}
+
+}
+
+const result = parse('**abc**');
+console.log(result);
