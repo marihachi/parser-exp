@@ -1,6 +1,6 @@
 import { Rule, TEXT, NONTERM, PATTERN } from './rule';
 import { ParserContext } from './parser-context';
-import { getFirst } from './util';
+import { FirstCtx, getFirst } from './util';
 
 /*
 
@@ -63,32 +63,46 @@ function parse(input: string) {
 		}
 	];
 
-	const first = getFirst(rules);
-	console.log('first:', first);
-
-	const ctx = new ParserContext(input);
-
-	for (const rule of first) {
-		switch (rule.seq[0].type) {
-			case 'text':
-				const token = ctx.seek(rule.seq[0].value.length);
-				if (token == rule.seq[0].value) {
-					console.log('text matched');
-					console.log(`token: "${token}"`);
-					console.log('rule:', rule);
-				}
-				break;
-			case 'pattern':
-				const result = new RegExp(`^${rule.seq[0].value}`).exec(ctx.input.substr(ctx.pos));
-				if (result != null) {
-					console.log('pattern matched');
-					console.log('result:', result[0]);
-					console.log('rule:', rule);
-					
-				}
-				break;
+	const firstCtx: FirstCtx = { rules, firstTable: [] };
+	while (true) {
+		let changed = false;
+		for (const [index] of firstCtx.rules.entries()) {
+			if (getFirst(index, firstCtx)) {
+				changed = true;
+			}
+		}
+		if (!changed) break;
+	}
+	for (const [index, first] of firstCtx.firstTable.entries()) {
+		console.log(`first[${index}]:`);
+		for (const item of first.items) {
+			console.log('  ', item);
 		}
 	}
+
+	// const ctx = new ParserContext(input);
+
+	// for (const rule of first) {
+	// 	switch (rule.seq[0].type) {
+	// 		case 'text':
+	// 			const token = ctx.seek(rule.seq[0].value.length);
+	// 			if (token == rule.seq[0].value) {
+	// 				console.log('text matched');
+	// 				console.log(`token: "${token}"`);
+	// 				console.log('rule:', rule);
+	// 			}
+	// 			break;
+	// 		case 'pattern':
+	// 			const result = new RegExp(`^${rule.seq[0].value}`).exec(ctx.input.substr(ctx.pos));
+	// 			if (result != null) {
+	// 				console.log('pattern matched');
+	// 				console.log('result:', result[0]);
+	// 				console.log('rule:', rule);
+					
+	// 			}
+	// 			break;
+	// 	}
+	// }
 }
 
 const result = parse('***abc***');

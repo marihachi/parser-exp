@@ -21,7 +21,7 @@ export function PATTERN(value: string): PatternItem {
 
 export type SeqItem = NonTermItem | TextItem | PatternItem;
 
-export type Rule<T extends SeqItem[] = SeqItem[]> = {
+export type Rule = {
 	name: string;
-	seq: T;
+	seq: SeqItem[];
 };
