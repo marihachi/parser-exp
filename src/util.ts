@@ -19,23 +19,23 @@ import { PatternItem, Rule, SeqItem, TextItem } from './rule';
 
 // }
 
-export type First = {
+export type TableItem = {
 	finish: boolean;
 	items: SeqItem[];
 };
 
 export type FirstCtx = {
 	rules: Rule[];
-	firstTable: First[];
+	firstTable: TableItem[];
 };
 
-export function getFirst(ruleId: number, ctx: FirstCtx): boolean {
+export function getFirst(ruleId: number, rules: Rule[], ctx: FirstCtx): boolean {
 	let changed = false;
 	if (ctx.firstTable[ruleId] == null) {
 		ctx.firstTable[ruleId] = { items: [], finish: false };
 	}
 	const result = ctx.firstTable[ruleId];
-	const rule = ctx.rules[ruleId];
+	const rule = rules[ruleId];
 	const seq0 = rule.seq[0];
 	if (!result.finish && rule.seq.length > 0) {
 		switch (seq0.type) {
@@ -49,8 +49,8 @@ export function getFirst(ruleId: number, ctx: FirstCtx): boolean {
 
 		case 'nonterm':
 			const ruleIds = [];
-			for (let i = 0; i < ctx.rules.length; i++) {
-				if (ctx.rules[i].name == seq0.name) ruleIds.push(i);
+			for (let i = 0; i < rules.length; i++) {
+				if (rules[i].name == seq0.name) ruleIds.push(i);
 			}
 			for (const id of ruleIds) {
 				const nt = ctx.firstTable[id];
